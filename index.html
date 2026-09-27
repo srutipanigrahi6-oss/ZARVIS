@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05070d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<title>ZARVIS</title>
+<style>
+:root{--bg:#05070d;--panel:#0b1020;--line:#243252;--text:#eaf1ff;--muted:#7f91b5;--accent:#58c7ff}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+body{overflow:hidden}.app{height:100dvh;display:flex;flex-direction:column;max-width:760px;margin:auto}
+header{padding:16px 16px 10px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.title{font-weight:800;letter-spacing:3px}.status{font-size:11px;color:var(--muted)}
+.chat{flex:1;overflow:auto;padding:16px}.msg{max-width:88%;padding:11px 13px;margin:9px 0;border:1px solid var(--line);border-radius:15px;line-height:1.4;white-space:pre-wrap}
+.user{margin-left:auto;background:#101a31}.zarvis{background:#09111d}
+.orbwrap{display:flex;justify-content:center;padding:8px}.orb{width:92px;height:92px;border-radius:50%;border:1px solid #4b8bb1;box-shadow:0 0 28px #153c56,inset 0 0 25px #102c40;display:grid;place-items:center;font-size:10px;letter-spacing:2px;color:#8bdcff;transition:.2s}
+.orb.listening{animation:pulse 1s infinite;box-shadow:0 0 45px #267da8,inset 0 0 30px #1b536e}
+@keyframes pulse{50%{transform:scale(1.08)}}.controls{padding:10px 12px 14px;border-top:1px solid var(--line);background:#070b14}
+.row{display:flex;gap:8px}.input{flex:1;min-width:0;background:#0b1120;border:1px solid var(--line);color:var(--text);padding:12px;border-radius:14px;font-size:15px}
+button{border:1px solid var(--line);background:#0d1528;color:var(--text);border-radius:13px;padding:11px 13px;font-weight:700}
+button:active{transform:scale(.97)}.mic{border-color:#2d6782}.hint{text-align:center;color:var(--muted);font-size:10px;margin-top:8px}
+.install{display:none;margin:0 12px 8px}.install.show{display:block}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="title">ZARVIS</div><div class="status" id="status">ONLINE • LOCAL MODE</div></header>
+<div class="orbwrap"><div class="orb" id="orb">READY</div></div>
+<main class="chat" id="chat"></main>
+<div class="install" id="installBox"><button id="installBtn" style="width:100%">＋ INSTALL ZARVIS</button></div>
+<section class="controls">
+<div class="row"><input id="input" class="input" placeholder="Talk or type to ZARVIS…" autocomplete="off"><button id="send">SEND</button><button id="mic" class="mic">🎙️</button></div>
+<div class="hint">ZARVIS PWA • voice input depends on browser support • no API key connected</div>
+</section>
+</div>
+<script>
+const chat=document.getElementById('chat'), input=document.getElementById('input'), status=document.getElementById('status'), orb=document.getElementById('orb'), mic=document.getElementById('mic');
+function add(text,who='zarvis'){const d=document.createElement('div');d.className='msg '+who;d.textContent=text;chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+function speak(text){if(!('speechSynthesis' in window))return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text);u.lang='en-IN';u.rate=.95;speechSynthesis.speak(u)}
+function reply(t){const x=t.toLowerCase();let r;
+if(/^(hi|hello|hey)\b/.test(x))r='Hello. ZARVIS is online and ready.';
+else if(x.includes('status'))r='Systems nominal. Local PWA mode is active. AI network connection is not configured.';
+else if(x.includes('time'))r='The current time is '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+'.';
+else if(x.includes('who are you'))r='I am ZARVIS, your local assistant interface.';
+else if(x.includes('study'))r='Study mode ready. Tell me the topic or question.';
+else r='I received: "'+t+'". My local demo brain is active, but an external AI service is not connected yet.';
+add(r);speak(r)}
+function send(){const t=input.value.trim();if(!t)return;add(t,'user');input.value='';reply(t)}
+document.getElementById('send').onclick=send;input.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){status.textContent='ONLINE • VOICE UNSUPPORTED';}
+else{
+ const rec=new SR();rec.lang='en-IN';rec.interimResults=true;rec.continuous=false;
+ rec.onstart=()=>{orb.textContent='LISTENING';orb.classList.add('listening');status.textContent='MIC • LISTENING'};
+ rec.onresult=e=>{let final='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript}if(final){input.value=final;send()}};
+ rec.onerror=e=>{orb.textContent='READY';orb.classList.remove('listening');status.textContent='MIC ERROR: '+e.error};
+ rec.onend=()=>{orb.textContent='READY';orb.classList.remove('listening');if(status.textContent==='MIC • LISTENING')status.textContent='ONLINE • LOCAL MODE'};
+ mic.onclick=()=>{try{rec.start()}catch(e){status.textContent='MIC BUSY • TRY AGAIN'}};
+}
+let deferred;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;document.getElementById('installBox').classList.add('show')});
+document.getElementById('installBtn').onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;document.getElementById('installBox').classList.remove('show')};
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+add('ZARVIS initialized. Type a message or tap the microphone.');
+</script>
+</body>
+</html>
