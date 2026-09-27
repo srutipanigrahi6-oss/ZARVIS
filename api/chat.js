@@ -5,12 +5,13 @@ const corsHeaders = {
 };
 
 export default async function handler(request) {
-    if (request.method === 'OPTIONS') {
+      if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
       headers: corsHeaders
     });
-    }
+  }
+
   if (request.method !== 'POST') {
     return Response.json(
       { error: 'ZARVIS backend expects a POST request.' },
