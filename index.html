@@ -41,14 +41,45 @@ button:active{transform:scale(.97)}.mic{border-color:#2d6782}.hint{text-align:ce
 const chat=document.getElementById('chat'), input=document.getElementById('input'), status=document.getElementById('status'), orb=document.getElementById('orb'), mic=document.getElementById('mic');
 function add(text,who='zarvis'){const d=document.createElement('div');d.className='msg '+who;d.textContent=text;chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
 function speak(text){if(!('speechSynthesis' in window))return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text);u.lang='en-IN';u.rate=.95;speechSynthesis.speak(u)}
-function reply(t){const x=t.toLowerCase();let r;
-if(/^(hi|hello|hey)\b/.test(x))r='Hello. ZARVIS is online and ready.';
-else if(x.includes('status'))r='Systems nominal. Local PWA mode is active. AI network connection is not configured.';
-else if(x.includes('time'))r='The current time is '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+'.';
-else if(x.includes('who are you'))r='I am ZARVIS, your local assistant interface.';
-else if(x.includes('study'))r='Study mode ready. Tell me the topic or question.';
-else r='I received: "'+t+'". My local demo brain is active, but an external AI service is not connected yet.';
-add(r);speak(r)}
+function reply(t){
+const x=t.toLowerCase();
+let r;
+
+if(/^(hi|hello|hey)\b/.test(x))
+  r='Hello. ZARVIS is online and ready.';
+
+else if(x.includes('time'))
+  r='The current time is '+new Date().toLocaleTimeString([],{
+    hour:'2-digit',
+    minute:'2-digit'
+  })+'.';
+
+else if(x.includes('date') || x.includes('today'))
+  r='Today is '+new Date().toLocaleDateString([],{
+    weekday:'long',
+    year:'numeric',
+    month:'long',
+    day:'numeric'
+  })+'.';
+
+else if(x.includes('status'))
+  r='All local systems are operational. ZARVIS is running in PWA mode.';
+
+else if(x.includes('who are you'))
+  r='I am ZARVIS, your local personal assistant.';
+
+else if(x.includes('study'))
+  r='Study mode ready. Tell me the subject or question.';
+
+else if(x.includes('thank'))
+  r='You are welcome. ZARVIS standing by.';
+
+else
+  r='I received: "'+t+'". My local brain is active, but the AI brain is not connected yet.';
+
+add(r);
+speak(r)
+ }
 function send(){const t=input.value.trim();if(!t)return;add(t,'user');input.value='';reply(t)}
 document.getElementById('send').onclick=send;input.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
 let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
