@@ -1,4 +1,16 @@
+const corsHeaders = {
+  'Access-Control-Allow-Origin': 'https://srutipanigrahi6-oss.github.io',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
 export default async function handler(request) {
+    if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders
+    });
+    }
   if (request.method !== 'POST') {
     return Response.json(
       { error: 'ZARVIS backend expects a POST request.' },
@@ -53,12 +65,15 @@ export default async function handler(request) {
     const reply =
       data.choices?.[0]?.message?.content ||
       'ZARVIS received no response from the AI.';
-
-    return Response.json({
-      ok: true,
-      reply
-    });
-
+return Response.json(
+  {
+    ok: true,
+    reply
+  },
+  {
+    headers: corsHeaders
+  }
+);
   } catch (error) {
     return Response.json(
       { error: 'ZARVIS backend error.' },
