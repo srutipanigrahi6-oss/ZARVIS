@@ -1,0 +1,12 @@
+{
+  "name": "ZARVIS",
+  "short_name": "ZARVIS",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#05070d",
+  "theme_color": "#05070d",
+  "description": "ZARVIS personal assistant interface",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
