@@ -48,7 +48,7 @@ let r;
 if(/^(hi|hello|hey)\b/.test(x))
   r='Hello. ZARVIS is online and ready.';
 
-else if(x.includes('time'))
+else if(/\btime\b/.test(x))
   r='The current time is '+new Date().toLocaleTimeString([],{
     hour:'2-digit',
     minute:'2-digit'
