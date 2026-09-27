@@ -72,31 +72,25 @@ else if(x.includes('study'))
   r='Study mode ready. Tell me the subject or question.';
 else if(x.includes('thank'))
   r='You are welcome. ZARVIS standing by.';
-
 else {
-  const calc=x.match(/(-?\d+(?:\.\d+)?)\s*(?:\+|plus|minus|-|times|\*|×|divided by|\/)\s*(-?\d+(?:\.\d+)?)/);
+  const calc=x.match(/(-?\d+(?:\.\d+)?)\s*(plus|minus|times|\+|-|\*|×|divided by|\/)\s*(-?\d+(?:\.\d+)?)/);
 
   if(calc){
     const a=Number(calc[1]);
-    const b=Number(calc[2]);
-    let op;
-
-    if(x.includes('plus') || x.includes('+')) op='+';
-    else if(x.includes('minus') || x.includes('-')) op='-';
-    else if(x.includes('times') || x.includes('*') || x.includes('×')) op='*';
-    else op='/';
-
+    const op=calc[2];
+    const b=Number(calc[3]);
     let answer;
 
-    if(op==='+') answer=a+b;
-    else if(op==='-') answer=a-b;
-    else if(op==='*') answer=a*b;
+    if(op==='plus' || op==='+') answer=a+b;
+    else if(op==='minus' || op==='-') answer=a-b;
+    else if(op==='times' || op==='*' || op==='×') answer=a*b;
     else answer=a/b;
 
     r='The answer is '+answer+'.';
   }
-  else
+  else {
     r='I received: "'+t+'". My local brain is active, but the AI brain is not connected yet.';
+  }
 }
 add(r);
 speak(r)
