@@ -70,13 +70,34 @@ else if(x.includes('who are you'))
 
 else if(x.includes('study'))
   r='Study mode ready. Tell me the subject or question.';
-
 else if(x.includes('thank'))
   r='You are welcome. ZARVIS standing by.';
 
-else
-  r='I received: "'+t+'". My local brain is active, but the AI brain is not connected yet.';
+else {
+  const calc=x.match(/(-?\d+(?:\.\d+)?)\s*(?:\+|plus|minus|-|times|\*|×|divided by|\/)\s*(-?\d+(?:\.\d+)?)/);
 
+  if(calc){
+    const a=Number(calc[1]);
+    const b=Number(calc[2]);
+    let op;
+
+    if(x.includes('plus') || x.includes('+')) op='+';
+    else if(x.includes('minus') || x.includes('-')) op='-';
+    else if(x.includes('times') || x.includes('*') || x.includes('×')) op='*';
+    else op='/';
+
+    let answer;
+
+    if(op==='+') answer=a+b;
+    else if(op==='-') answer=a-b;
+    else if(op==='*') answer=a*b;
+    else answer=a/b;
+
+    r='The answer is '+answer+'.';
+  }
+  else
+    r='I received: "'+t+'". My local brain is active, but the AI brain is not connected yet.';
+}
 add(r);
 speak(r)
  }
