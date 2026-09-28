@@ -33,7 +33,7 @@ export default async function handler(request) {
     const response = await fetch(
       'https://api.groq.com/openai/v1/chat/completions',
       {
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(30000),
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
