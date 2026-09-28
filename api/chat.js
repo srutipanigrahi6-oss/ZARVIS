@@ -12,29 +12,9 @@ export default async function handler(request) {
     });
   }
 if (request.method === 'GET') {
-  try {
-    const test = await fetch(
-      'https://api.groq.com/openai/v1/models',
-      {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
-        },
-        signal: AbortSignal.timeout(10000)
-      }
-    );
-
-    const data = await test.json();
-
-    return Response.json({
-      groqStatus: test.status,
-      groqResponse: data
-    });
-  } catch (error) {
-    return Response.json({
-      error: error.message
-    }, { status: 500 });
-  }
+  return Response.json({
+    keyConfigured: Boolean(process.env.GROQ_API_KEY)
+  });
 }
   if (request.method !== 'POST') {
     return Response.json(
