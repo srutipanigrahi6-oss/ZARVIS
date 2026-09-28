@@ -95,6 +95,7 @@ else {
     orb.classList.add('listening');
 
     const response=await fetch('https://zarvis-vert.vercel.app/api/chat',{
+      signal:AbortSignal.timeout(15000) 
       method:'POST',
       headers:{
         'Content-Type':'text/plain'
